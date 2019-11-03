@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/wrapper"
+    style="@style/LayoutFullWidth.Vertical">
+
+    <LinearLayout
+        style="@style/LayoutFullWidth.Vertical.MarginNormal">
+
+        <TextView
+            android:id="@+id/name"
+            style="@style/RepositoryTitle"
+            tools:text="name" />
+
+        <TextView
+            android:id="@+id/summary"
+            style="@style/LayoutFullWidth"
+            tools:text="summary" />
+
+        <LinearLayout
+            android:id="@+id/info_wrapper"
+            style="@style/LayoutFullWidth.Vertical"
+            android:layout_marginTop="@dimen/indent_half"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/created"
+                style="@style/RepositoryDetailItem"
+                tools:text="Created: "/>
+
+            <TextView
+                android:id="@+id/updated"
+                style="@style/RepositoryDetailItem"
+                tools:text="Updated: "/>
+
+            <TextView
+                android:id="@+id/language"
+                style="@style/RepositoryDetailItem.WithDrawable"
+                android:drawableStart="@drawable/ic_bra_ket"
+                tools:text="Language: Kotlin"/>
+
+            <LinearLayout
+                style="@style/LayoutFullWidth.Horizontal">
+
+                <TextView
+                    android:id="@+id/issues"
+                    style="@style/RepositoryDetailItem.WithDrawable.WithWeight"
+                    android:drawableStart="@drawable/ic_issues"
+                    tools:text="Issues: 123"/>
+
+                <TextView
+                    android:id="@+id/watchers"
+                    style="@style/RepositoryDetailItem.WithDrawable.WithWeight"
+                    android:drawableStart="@drawable/ic_binoculars"
+                    tools:text="Watchers: -1"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/LayoutFullWidth.Horizontal">
+
+                <TextView
+                    android:id="@+id/forks"
+                    style="@style/RepositoryDetailItem.WithDrawable.WithWeight"
+                    android:layout_marginBottom="0dp"
+                    android:drawableStart="@drawable/ic_fork"
+                    tools:text="Forks: 234"/>
+
+                <TextView
+                    android:id="@+id/stars"
+                    style="@style/RepositoryDetailItem.WithDrawable.WithWeight"
+                    android:layout_marginBottom="0dp"
+                    android:drawableStart="@drawable/ic_star"
+                    tools:text="Stars: 9999"/>
+
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/blackDisabled" />
+
+</LinearLayout>

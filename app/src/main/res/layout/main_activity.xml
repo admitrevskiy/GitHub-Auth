@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    style="@style/LayoutFullWidth.Vertical">
+
+    <LinearLayout
+        android:id="@+id/auth"
+        style="@style/LayoutFullWidth.Vertical">
+
+        <LinearLayout
+            style="@style/LayoutFullWidth.Vertical.MarginNormal">
+
+            <TextView
+                style="@style/LoginItem"
+                android:text="@string/username" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/username"
+                style="@style/LoginEditText"
+                android:hint="@string/username" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/LayoutFullWidth.Vertical.MarginNormal">
+
+            <TextView
+                style="@style/LoginItem"
+                android:text="@string/password" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/password"
+                style="@style/LoginEditText.Password"
+                android:hint="@string/password" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/two_fa_wrapper"
+            style="@style/LayoutFullWidth.Vertical.MarginNormal"
+            android:visibility="gone">
+
+            <TextView
+                style="@style/LoginItem"
+                android:text="@string/two_fa_token" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/two_fa"
+                style="@style/LoginEditText"
+                android:hint="@string/two_fa_token" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn"
+            style="@style/LayoutFullWidth.MarginNormal"
+            android:text="CLICK ME" />
+
+        <ProgressBar
+            android:id="@+id/progress"
+            android:visibility="gone"
+            style="@style/LayoutFullWidth.MarginNormal" />
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/repos_list"
+        style="@style/LayoutFullWidth.Vertical" />
+</LinearLayout>

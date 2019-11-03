@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/blueDisabled" />
+    <corners
+        android:topLeftRadius="@dimen/indent_quarter"
+        android:topRightRadius="@dimen/indent_quarter"
+        android:bottomLeftRadius="@dimen/indent_quarter"
+        android:bottomRightRadius="@dimen/indent_quarter"/>
+    <stroke
+        android:width="2dp"
+        android:color="@color/colorAccent" />
+</shape>

@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">GitHub Auth</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="two_fa_token">2FA token</string>
+    <string name="created">Created: %s</string>
+    <string name="updated">Updated: %s</string>
+    <string name="forks">Forks: %d</string>
+    <string name="stars">Stars: %d</string>
+    <string name="opened_issues">Issues: %d</string>
+    <string name="watchers">Watchers: %d</string>
+    <string name="language">Language: %s</string>
+    <string name="no_description">(No description)</string>
+
+    <!-- Errors -->
+    <string name="error_2fa">2FA Enabled</string>
+    <string name="error_bad_credentials">Bad Credentials</string>
+    <string name="error_unknown">Unknown exception: %s</string>
+</resources>
