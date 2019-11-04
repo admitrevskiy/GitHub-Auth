@@ -102,7 +102,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.reposWrapper.observe(this, Observer {
             it?.let {
                 recycler.visibility = View.VISIBLE
-                showRepos(it.repos)
+                showRepos(it)
             }
         })
 

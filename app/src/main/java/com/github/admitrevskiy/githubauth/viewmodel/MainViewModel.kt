@@ -3,7 +3,6 @@ package com.github.admitrevskiy.githubauth.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.github.admitrevskiy.githubauth.model.repo.GitHubRepo
-import com.github.admitrevskiy.githubauth.model.repo.ReposWrapper
 import com.github.admitrevskiy.githubauth.model.rest.ErrorType
 import com.github.admitrevskiy.githubauth.model.rest.ErrorWrapper
 import com.github.admitrevskiy.githubauth.model.rest.GitHubApi
@@ -22,7 +21,7 @@ class MainViewModel(private val api: GitHubApi) : ViewModel() {
     private var disposable: CompositeDisposable = CompositeDisposable()
 
     /** LiveData */
-    val reposWrapper: MutableLiveData<ReposWrapper> = MutableLiveData()
+    val reposWrapper: MutableLiveData<List<GitHubRepo>> = MutableLiveData()
     val errorWrapper: MutableLiveData<ErrorWrapper> = MutableLiveData()
     val inProgress: MutableLiveData<Boolean> = MutableLiveData()
     val need2FA: MutableLiveData<Boolean> = MutableLiveData()
@@ -95,7 +94,7 @@ class MainViewModel(private val api: GitHubApi) : ViewModel() {
         inProgress.value = false
         errorWrapper.value = null
         need2FA.value = false
-        reposWrapper.value = ReposWrapper(username, value)
+        reposWrapper.value = value
     }
 
     private fun notifyErrorWrapper(e: Throwable?, type: ErrorType) {
