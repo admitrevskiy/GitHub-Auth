@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.admitrevskiy.githubauth.model.repo.GitHubRepo
 import com.github.admitrevskiy.githubauth.R
 import com.github.admitrevskiy.githubauth.extensions.view.setTextOrHide
-import com.github.admitrevskiy.githubauth.extensions.view.swapVisibility
+import com.github.admitrevskiy.githubauth.extensions.view.inverseVisibility
 import com.github.admitrevskiy.githubauth.view.helpers.RepositoryAdapter.ViewHolder
 
 /**
@@ -43,7 +43,7 @@ class RepositoryAdapter(private val context: Context, private val repos: List<Gi
             holder.watchers.text = context.getString(R.string.watchers, this.watchers)
 
             holder.info.visibility = View.GONE
-            holder.wrapper.setOnClickListener { holder.info.swapVisibility() }
+            holder.wrapper.setOnClickListener { holder.info.inverseVisibility() }
         }
     }
 

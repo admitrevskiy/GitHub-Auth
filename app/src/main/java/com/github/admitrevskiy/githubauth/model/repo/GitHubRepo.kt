@@ -2,18 +2,18 @@ package com.github.admitrevskiy.githubauth.model.repo
 
 
 class GitHubRepo {
-    internal var name: String? = null
-    internal var owner: String? = null
-    internal var url: String? = null
-    internal var homepage: String? = null
-    internal var description: String? = null
-    internal var fork: Boolean? = false
-    internal var forks: Int? = 0
-    internal var language: String? = null
-    internal var htmlUrl: String? = null
-    internal var creationTime: String? = null
-    internal var lastUpdateTime: String? = null
-    internal var stars: Int? = null
-    internal var issues: Int? = null
-    internal var watchers: Int? = null
+    var name: String? = null
+    var owner: String? = null
+    var url: String? = null
+    var homepage: String? = null
+    var description: String? = null
+    var fork: Boolean? = false
+    var forks: Int? = 0
+    var language: String? = null
+    var htmlUrl: String? = null
+    var creationTime: String? = null
+    var lastUpdateTime: String? = null
+    var stars: Int? = null
+    var issues: Int? = null
+    var watchers: Int? = null
 }

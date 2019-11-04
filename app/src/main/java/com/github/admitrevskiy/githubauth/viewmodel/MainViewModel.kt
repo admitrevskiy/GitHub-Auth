@@ -17,16 +17,16 @@ import retrofit2.HttpException
 
 /**
  * ViewModel
- * TODO Handle screen rotation
  */
 class MainViewModel(private val api: GitHubApi) : ViewModel() {
 
     private var disposable: CompositeDisposable = CompositeDisposable()
 
     /** LiveData */
-    internal val reposWrapper: MutableLiveData<ReposWrapper> = MutableLiveData()
-    internal val errorWrapper: MutableLiveData<ErrorWrapper> = MutableLiveData()
-    internal val inProgress: MutableLiveData<Boolean> = MutableLiveData()
+    val reposWrapper: MutableLiveData<ReposWrapper> = MutableLiveData()
+    val errorWrapper: MutableLiveData<ErrorWrapper> = MutableLiveData()
+    val inProgress: MutableLiveData<Boolean> = MutableLiveData()
+    val need2FA: MutableLiveData<Boolean> = MutableLiveData()
 
     private lateinit var username: String
     private lateinit var password: String
@@ -53,10 +53,18 @@ class MainViewModel(private val api: GitHubApi) : ViewModel() {
             .subscribeWith(ReposLoaderObserver()))
     }
 
+    fun reset() {
+        need2FA.value = false
+        inProgress.value = false
+        reposWrapper.value = null
+        errorWrapper.value = null
+    }
+
     /**
      * Triggers 2FA OTP sending
      */
     private fun trigger2FAOTPSending() {
+        need2FA.value = true
         disposable.add(api.trigger2FA(Credentials.basic(username, password))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -70,6 +78,8 @@ class MainViewModel(private val api: GitHubApi) : ViewModel() {
 
         override fun onSuccess(value: List<GitHubRepo>) {
             inProgress.value = false
+            errorWrapper.value = null
+            need2FA.value = false
             reposWrapper.value = ReposWrapper(username, value)
         }
 

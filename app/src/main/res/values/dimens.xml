@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="indent_smallest">2dp</dimen>
+    <!-- Indents -->
     <dimen name="indent_quarter">4dp</dimen>
     <dimen name="indent_half">8dp</dimen>
-    <dimen name="indent_three_quarters">12dp</dimen>
     <dimen name="indent_normal">16dp</dimen>
-    <dimen name="indent_normal_and_half">24dp</dimen>
-    <dimen name="indent_double">32dp</dimen>
-    <dimen name="indent_triple">48dp</dimen>
 
+    <!-- Radius -->
+    <dimen name="radius_quarter">4dp</dimen>
+
+    <!-- Views sizes -->
+    <dimen name="border_thickness">2dp</dimen>
+    <dimen name="divider_thickness">1dp</dimen>
+
+    <!-- Text size -->
     <dimen name="bigText">20sp</dimen>
 </resources>

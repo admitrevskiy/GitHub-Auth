@@ -4,11 +4,10 @@ import android.view.View
 import android.widget.TextView
 import androidx.annotation.StringRes
 import android.app.Activity
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.view.inputmethod.InputMethodManager
 
 
-fun View.swapVisibility() {
+fun View.inverseVisibility() {
     if (this.visibility == View.GONE) {
         this.visibility = View.VISIBLE
     } else {

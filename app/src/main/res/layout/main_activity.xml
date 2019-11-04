@@ -54,7 +54,7 @@
         <Button
             android:id="@+id/btn"
             style="@style/LayoutFullWidth.MarginNormal"
-            android:text="CLICK ME" />
+            android:text="@string/give_me_repos" />
 
         <ProgressBar
             android:id="@+id/progress"

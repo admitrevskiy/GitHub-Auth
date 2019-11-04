@@ -11,9 +11,11 @@
     <string name="watchers">Watchers: %d</string>
     <string name="language">Language: %s</string>
     <string name="no_description">(No description)</string>
+    <string name="give_me_repos">Start!</string>
 
     <!-- Errors -->
     <string name="error_2fa">2FA Enabled</string>
     <string name="error_bad_credentials">Bad Credentials</string>
     <string name="error_unknown">Unknown exception: %s</string>
+    <string name="error_empty">Empty value</string>
 </resources>

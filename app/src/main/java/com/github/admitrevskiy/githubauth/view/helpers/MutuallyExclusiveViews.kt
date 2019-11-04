@@ -8,7 +8,7 @@ import android.view.View
 class MutuallyExclusiveViews(bearing: View, support: View) : android.util.Pair<View, View>(bearing, support) {
 
     /** Check this variable to know state of views */
-    internal var initialState: Boolean = true
+    var initialState: Boolean = true; private set
 
     /** Initial state: bearing view is visible; support view is gone */
     init {

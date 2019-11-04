@@ -19,7 +19,7 @@ interface GitHubApi {
     fun getRepos(@Header("Authorization") token: String) : Single<List<GitHubRepo>>
 
     /**
-     * Gets List of repositories
+     * Gets List of repositories with 2FA OTP
      */
     @GET("user/repos?per_page=100")
     fun getRepos(@Header("Authorization") token: String, @Header("x-github-otp") otp: String) : Single<List<GitHubRepo>>

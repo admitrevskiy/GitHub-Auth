@@ -41,7 +41,6 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModel()
 
     private lateinit var repositoryAdapter: RepositoryAdapter
-    private var need2fa = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         button = findViewById<Button>(R.id.btn).apply {
             setOnClickListener {
                 this@MainActivity.hideKeyboard()
-                if (need2fa) {
+                if (twoFAWrapper.visibility == View.VISIBLE) {
                     if (!handleEmptyFields(username, password, twoFA)) {
                         return@setOnClickListener
                     }
@@ -92,6 +91,7 @@ class MainActivity : AppCompatActivity() {
             super.onBackPressed()
         } else {
             authAndRepos.excludeVisibility(true)
+            viewModel.reset()
         }
     }
 
@@ -100,26 +100,22 @@ class MainActivity : AppCompatActivity() {
      */
     private fun observeViewModel() {
         viewModel.reposWrapper.observe(this, Observer {
-            if (it != null) {
+            it?.let {
                 recycler.visibility = View.VISIBLE
                 showRepos(it.repos)
             }
         })
 
         viewModel.errorWrapper.observe(this, Observer {
-            if (it != null) {
-                Snackbar.make(username, getSnackMessage(it), Snackbar.LENGTH_LONG).show()
-            }
+            it?.let { Snackbar.make(username, getSnackMessage(it), Snackbar.LENGTH_LONG).show() }
         })
 
         viewModel.inProgress.observe(this, Observer {
-            if (it != null) {
-                if (it) {
-                    buttonAndProgress.excludeVisibility(false)
-                } else {
-                    buttonAndProgress.excludeVisibility(true)
-                }
-            }
+            it?.let { buttonAndProgress.excludeVisibility(!it) }
+        })
+
+        viewModel.need2FA.observe(this, Observer {
+            it?.let { refresh2FAViews(it) }
         })
     }
 
@@ -131,15 +127,13 @@ class MainActivity : AppCompatActivity() {
     private fun getSnackMessage(e: ErrorWrapper) : String {
         return when(e.type) {
             ErrorType.TWO_FA -> {
-                need2fa = true
-                twoFAWrapper.visibility = View.VISIBLE
                 getString(R.string.error_2fa)
             }
             ErrorType.BAD_CREDENTIALS -> {
                 getString(R.string.error_bad_credentials)
             }
             else -> {
-                getString(R.string.error_unknown, e.error!!.message)
+                getString(R.string.error_unknown, e.error?.message)
             }
         }
     }
@@ -148,19 +142,17 @@ class MainActivity : AppCompatActivity() {
      * Shows list of repositories in RecyclerView
      */
     private fun showRepos(list: List<GitHubRepo>) {
-        reset2FA()
-        repositoryAdapter = RepositoryAdapter(this, list)
-        recycler.adapter = repositoryAdapter
+        refresh2FAViews(false)
+        repositoryAdapter = RepositoryAdapter(this, list).apply { recycler.adapter = this }
         authAndRepos.excludeVisibility(false)
     }
 
     /**
      * Resets 2FA views
      */
-    private fun reset2FA() {
-        twoFAWrapper.visibility = View.GONE
+    private fun refresh2FAViews(need2FA: Boolean) {
+        twoFAWrapper.visibility = if (need2FA) View.VISIBLE else View.GONE
         twoFA.setText("")
-        need2fa = false
     }
 
     /**
@@ -173,7 +165,7 @@ class MainActivity : AppCompatActivity() {
         for (e in views) {
             if (e.text.toString().isEmpty()) {
                 ok = false
-                e.error = "Empty value"
+                e.error = getString(R.string.error_empty)
             }
         }
         return ok
