@@ -6,7 +6,12 @@ import androidx.annotation.StringRes
 import android.app.Activity
 import android.view.inputmethod.InputMethodManager
 
-
+/**
+ * Inverses visibility of view
+ *
+ * Sets visibility to GONE if view visibility was VISIBLE
+ * Sets visibility to VISIBLE if view visibility was GONE
+ */
 fun View.inverseVisibility() {
     if (this.visibility == View.GONE) {
         this.visibility = View.VISIBLE
@@ -15,6 +20,9 @@ fun View.inverseVisibility() {
     }
 }
 
+/**
+ * Sets value text to TextView with string resource with given id or hides TextView if value is null
+ */
 fun <T> TextView.setTextOrHide(@StringRes id: Int, value: T) {
     value?.let {
         this.text = context.getString(id, it.toString())
@@ -24,13 +32,12 @@ fun <T> TextView.setTextOrHide(@StringRes id: Int, value: T) {
     this.visibility = View.GONE
 }
 
+/**
+ * Hides soft keyboard
+ */
 fun Activity.hideKeyboard() {
-    val imm = this.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-    //Find the currently focused view, so we can grab the correct window token from it.
-    var view = this.currentFocus
-    //If no view currently has focus, create a new one, just so we can grab a window token from it
-    if (view == null) {
-        view = View(this)
+    this.currentFocus?.let { v ->
+        val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as? InputMethodManager
+        imm?.hideSoftInputFromWindow(v.windowToken, 0)
     }
-    imm.hideSoftInputFromWindow(view.windowToken, 0)
 }

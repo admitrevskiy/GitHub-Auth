@@ -5,18 +5,16 @@ import androidx.lifecycle.ViewModel
 import com.github.admitrevskiy.githubauth.model.repo.GitHubRepo
 import com.github.admitrevskiy.githubauth.model.rest.ErrorType
 import com.github.admitrevskiy.githubauth.model.rest.ErrorWrapper
-import com.github.admitrevskiy.githubauth.model.rest.GitHubApi
-import io.reactivex.Single
+import com.github.admitrevskiy.githubauth.repository.GitHubRepository
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import okhttp3.Credentials
 import retrofit2.HttpException
 
 /**
  * ViewModel
  */
-class MainViewModel(private val api: GitHubApi) : ViewModel() {
+class MainViewModel(private val repository: GitHubRepository) : ViewModel() {
 
     private var disposable: CompositeDisposable = CompositeDisposable()
 
@@ -37,17 +35,12 @@ class MainViewModel(private val api: GitHubApi) : ViewModel() {
     /**
      * Loads List of repositories from GitHub
      */
-    fun loadRepos(username: String, password: String, twoFa: String? = null) {
+    fun loadRepos(username: String, password: String, otp: String? = null) {
         inProgress.value = true
         this.username = username
         this.password = password
-        val response: Single<List<GitHubRepo>> = if (twoFa == null) {
-            api.getRepos(Credentials.basic(username, password))
-        } else {
-            api.getRepos(Credentials.basic(username, password), twoFa)
-        }
 
-        disposable.add(response
+        disposable.add(repository.getRepos(username, password, otp)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -70,7 +63,7 @@ class MainViewModel(private val api: GitHubApi) : ViewModel() {
      * Triggers 2FA OTP sending
      */
     private fun trigger2FAOTPSending() {
-        disposable.add(api.trigger2FA(Credentials.basic(username, password))
+        disposable.add(repository.trigger2FAOTP(username, password)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -109,15 +102,17 @@ class MainViewModel(private val api: GitHubApi) : ViewModel() {
         when (e) {
             is HttpException -> {
                 if (e.code() == 401) {
-                    if (e.response().headers().get("x-github-otp") != null) {
-                        if (need2FA.value != null && need2FA.value as Boolean) {
-                            notifyErrorWrapper(e, ErrorType.BAD_CREDENTIALS)
-                        } else {
-                            trigger2FAOTPSending()
-                        }
-                    } else {
-                        notifyErrorWrapper(e, ErrorType.BAD_CREDENTIALS)
-                    }
+                    e.response().headers().get("x-github-otp")?.let {
+                        need2FA.value?.let {
+                            if (it) {
+                                // 2FA has been sent already.
+                                notifyErrorWrapper(e, ErrorType.BAD_CREDENTIALS)
+                            } else {
+                                // 2FA hasn't been sent. Trigger sending
+                                trigger2FAOTPSending()
+                            }
+                        } ?: notifyErrorWrapper(e, ErrorType.BAD_CREDENTIALS)
+                    } ?: notifyErrorWrapper(e, ErrorType.BAD_CREDENTIALS)
                 } else {
                     notifyErrorWrapper(e, ErrorType.UNKNOWN)
                 }
