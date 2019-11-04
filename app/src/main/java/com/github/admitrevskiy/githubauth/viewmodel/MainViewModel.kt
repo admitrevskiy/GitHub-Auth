@@ -10,7 +10,6 @@ import com.github.admitrevskiy.githubauth.model.rest.GitHubApi
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
 import okhttp3.Credentials
 import retrofit2.HttpException
@@ -43,16 +42,24 @@ class MainViewModel(private val api: GitHubApi) : ViewModel() {
         inProgress.value = true
         this.username = username
         this.password = password
-        val response: Single<List<GitHubRepo>> = if (twoFa == null) { api.getRepos(Credentials.basic(username, password)) } else {
+        val response: Single<List<GitHubRepo>> = if (twoFa == null) {
+            api.getRepos(Credentials.basic(username, password))
+        } else {
             api.getRepos(Credentials.basic(username, password), twoFa)
         }
 
         disposable.add(response
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribeWith(ReposLoaderObserver()))
+            .subscribe(
+                { value -> success(value) },
+                { e -> handleException(e) }
+            ))
     }
 
+    /**
+     * Resets all LiveData values
+     */
     fun reset() {
         need2FA.value = false
         inProgress.value = false
@@ -64,56 +71,58 @@ class MainViewModel(private val api: GitHubApi) : ViewModel() {
      * Triggers 2FA OTP sending
      */
     private fun trigger2FAOTPSending() {
-        need2FA.value = true
         disposable.add(api.trigger2FA(Credentials.basic(username, password))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribeWith(Trigger2FAObserver()))
+            .subscribe(
+                { notify2FAOTPSent() },
+                { notify2FAOTPSent() }
+            ))
     }
 
-    inner class ReposLoaderObserver : DisposableSingleObserver<List<GitHubRepo>>() {
-        override fun onError(e: Throwable) {
-            handleException(e)
-        }
+    /**
+     * Notifies that 2FA token has been sent to user
+     */
+    private fun notify2FAOTPSent() {
+        need2FA.value = true
+        notifyErrorWrapper(null, ErrorType.TWO_FA)
+    }
 
-        override fun onSuccess(value: List<GitHubRepo>) {
-            inProgress.value = false
-            errorWrapper.value = null
-            need2FA.value = false
-            reposWrapper.value = ReposWrapper(username, value)
-        }
+    /**
+     * Sets LiveData values to `success` state
+     */
+    private fun success(value: List<GitHubRepo>) {
+        inProgress.value = false
+        errorWrapper.value = null
+        need2FA.value = false
+        reposWrapper.value = ReposWrapper(username, value)
+    }
 
-        private fun handleException(e: Throwable) {
-            when (e) {
-                is HttpException -> {
-                    if (e.code() == 401) {
-                        if (e.response().headers().get("x-github-otp") != null) {
-                            trigger2FAOTPSending()
+    private fun notifyErrorWrapper(e: Throwable?, type: ErrorType) {
+        errorWrapper.value = ErrorWrapper(e, type)
+        inProgress.value = false
+    }
+
+    /**
+     * Handles exception on execution
+     */
+    private fun handleException(e: Throwable) {
+        when (e) {
+            is HttpException -> {
+                if (e.code() == 401) {
+                    if (e.response().headers().get("x-github-otp") != null) {
+                        if (need2FA.value != null && need2FA.value as Boolean) {
+                            notifyErrorWrapper(e, ErrorType.BAD_CREDENTIALS)
                         } else {
-                            errorWrapper.value = ErrorWrapper(e, ErrorType.BAD_CREDENTIALS)
-                            inProgress.value = false
+                            trigger2FAOTPSending()
                         }
                     } else {
-                        errorWrapper.value = ErrorWrapper(e, ErrorType.UNKNOWN)
+                        notifyErrorWrapper(e, ErrorType.BAD_CREDENTIALS)
                     }
+                } else {
+                    notifyErrorWrapper(e, ErrorType.UNKNOWN)
                 }
             }
         }
-    }
-
-    inner class Trigger2FAObserver : DisposableSingleObserver<Void>() {
-        override fun onError(e: Throwable) {
-            stopExecution()
-        }
-
-        override fun onSuccess(value: Void) {
-            stopExecution()
-        }
-
-        private fun stopExecution() {
-            inProgress.value = false
-            errorWrapper.value = ErrorWrapper(null, ErrorType.TWO_FA)
-        }
-
     }
 }
