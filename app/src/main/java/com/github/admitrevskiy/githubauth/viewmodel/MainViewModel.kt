@@ -24,9 +24,6 @@ class MainViewModel(private val repository: GitHubRepository) : ViewModel() {
     val inProgress: MutableLiveData<Boolean> = MutableLiveData()
     val need2FA: MutableLiveData<Boolean> = MutableLiveData()
 
-    private lateinit var username: String
-    private lateinit var password: String
-
     override fun onCleared() {
         super.onCleared()
         disposable.clear()
@@ -37,15 +34,13 @@ class MainViewModel(private val repository: GitHubRepository) : ViewModel() {
      */
     fun loadRepos(username: String, password: String, otp: String? = null) {
         inProgress.value = true
-        this.username = username
-        this.password = password
 
         disposable.add(repository.getRepos(username, password, otp)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { value -> success(value) },
-                { e -> handleException(e) }
+                { e -> handleException(e, username, password) }
             ))
     }
 
@@ -62,7 +57,7 @@ class MainViewModel(private val repository: GitHubRepository) : ViewModel() {
     /**
      * Triggers 2FA OTP sending
      */
-    private fun trigger2FAOTPSending() {
+    private fun trigger2FAOTPSending(username: String, password: String) {
         disposable.add(repository.trigger2FAOTP(username, password)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -98,7 +93,7 @@ class MainViewModel(private val repository: GitHubRepository) : ViewModel() {
     /**
      * Handles exception on execution
      */
-    private fun handleException(e: Throwable) {
+    private fun handleException(e: Throwable, username: String, password: String) {
         when (e) {
             is HttpException -> {
                 if (e.code() == 401) {
@@ -109,7 +104,7 @@ class MainViewModel(private val repository: GitHubRepository) : ViewModel() {
                                 notifyErrorWrapper(e, ErrorType.BAD_CREDENTIALS)
                             } else {
                                 // 2FA hasn't been sent. Trigger sending
-                                trigger2FAOTPSending()
+                                trigger2FAOTPSending(username, password)
                             }
                         } ?: notifyErrorWrapper(e, ErrorType.BAD_CREDENTIALS)
                     } ?: notifyErrorWrapper(e, ErrorType.BAD_CREDENTIALS)
